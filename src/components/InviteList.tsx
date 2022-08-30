@@ -1,23 +1,21 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { Dropdown, Space, Row, Col, Avatar, Menu } from 'antd';
-import {IUser, ITeam} from './interfaces';
+import { IUser, ITeam } from './interfaces';
+import { arrayRemoveByValue } from './utils';
 
 import "antd/dist/antd.css";
 import { DownOutlined, UserOutlined } from '@ant-design/icons';
 
 interface Props {
-  userInvites: IUser[];
-  teamInvites: ITeam[];
+  userInvites: any;
+  setUserInvites(value: any): void;
+  teamInvites: any;
+  setTeamInvites(value: any): void;
 }
 
-function arrayRemoveByValue(array, value) { 
-  return array.filter(function(e){ 
-        return e != value; 
-  });
-}
 
-export const menu = (props:any) => {
+export const menu = (props: any) => {
   return <Menu onClick={props.onSelect}
     items={[
       {
@@ -49,75 +47,73 @@ export const menu = (props:any) => {
 
 export const InviteList = (props: Props) => {
 
-  let [userInvites, setUserInvites] = useState([]);
-  let [teamInvites, setTeamInvites] = useState([]);
-
   useEffect(() => {
-      setUserInvites(props.userInvites);
-      setTeamInvites(props.teamInvites);
+    props.setUserInvites(props.userInvites);
+    props.setTeamInvites(props.teamInvites);
   }, [props])
 
-
-  const userChangePermission = (user:any) => ({ item, key, keyPath, domEvent }) => {
+  const userChangePermission = (user: any) => ({ item }) => {
     let content = item.props.elementRef.current.textContent;
-    
+
     if (content === "Delete") {
-      userInvites = arrayRemoveByValue(userInvites, user);
+      let userInvites = arrayRemoveByValue(props.userInvites, user);
+      props.setUserInvites([...userInvites]);
     } else {
       user.permission = item.props.elementRef.current.textContent;
+      props.setUserInvites([...props.userInvites]);
     }
-    setUserInvites([...userInvites]);
   }
 
-  let userRows = userInvites.map((user) => {
-    return <Row key={user.userId}  style={{"marginTop": "24px"}}>
+  let userRows = props.userInvites.map((user: IUser) => {
+    return <Row key={user.userId} style={{ "marginTop": "24px" }}>
       <Col span={2}><Avatar size="64" icon={<UserOutlined />} /> </Col>
-      <Col span={10}>{user.userName}</Col>
-      <Col span={7} offset={5}>
-        <Dropdown overlay={ menu({onSelect: userChangePermission(user)}) }>
-            <a onClick={(e) => e.preventDefault()} >
+      <Col span={10} style={{ "margin": "4px" }}>{user.userName}</Col>
+      <Col span={7} offset={4} >
+        <Dropdown overlay={menu({ onSelect: userChangePermission(user) })}>
+          <a onClick={(e) => e.preventDefault()} >
             <Space>
-                  {user.permission} <DownOutlined />
+              <span style={{ "position": "relative", "top": "4px" }}>{user.permission}</span> <DownOutlined style={{ "position": "relative", "top": "4px" }} />
             </Space>
-            </a>
+          </a>
         </Dropdown>
       </Col>
     </Row>
   });
 
-  const teamChangePermission = (team:any) => ({ item, key, keyPath, domEvent }) => {
+  const teamChangePermission = (team: ITeam) => ({ item, key, keyPath, domEvent }) => {
     let content = item.props.elementRef.current.textContent;
     if (content === "Delete") {
-      teamInvites = arrayRemoveByValue(teamInvites, team);
+      let teamInvites = arrayRemoveByValue(teamInvites, team);
+      props.setTeamInvites([...teamInvites]);
     } else {
       team.permission = item.props.elementRef.current.textContent;
+      props.setTeamInvites([...props.teamInvites]);
     }
-    setTeamInvites([...teamInvites]);
   }
 
 
-  let teamRows = teamInvites.map((team) => {
-    return <Row  style={{"marginTop": "24px"}}>
+  let teamRows = props.teamInvites.map((team: ITeam) => {
+    return <Row style={{ "marginTop": "24px" }}>
       <Col span={2}><Avatar size="64" icon={<UserOutlined />} /> </Col>
-      <Col span={10}>{team.teamName}</Col>
-      <Col span={7} offset={5}>
-        <Dropdown overlay={ menu({onSelect: teamChangePermission(team)}) }>
-            <a onClick={e => e.preventDefault()}>
+      <Col span={10} style={{ "margin": "4px" }}>{team.teamName}</Col>
+      <Col span={7} offset={4}>
+        <Dropdown overlay={menu({ onSelect: teamChangePermission(team) })}>
+          <a onClick={e => e.preventDefault()}>
             <Space>
-                  {team.permission} <DownOutlined />
+              <span style={{ "position": "relative", "top": "4px" }}>{team.permission}</span> <DownOutlined style={{ "position": "relative", "top": "4px" }} />
             </Space>
-            </a>
+          </a>
         </Dropdown>
       </Col>
     </Row>
   });
 
 
- return (
-   <>
-   {userRows}
-   {teamRows}
-   </>
+  return (
+    <>
+      {userRows}
+      {teamRows}
+    </>
 
   );
 };

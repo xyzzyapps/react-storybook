@@ -1,4 +1,3 @@
-import { Menu } from 'antd';
 import * as React from 'react';
 
 export interface IUser {
@@ -17,35 +16,7 @@ export interface ITeam {
 }
 
 export interface IAutoCompleteSuggestion {
-    name: string;
-    imageURL:  string;
-    type: string;
-}
-
-export const menu = (props:any) => {
-  return <Menu onClick={props.onSelect}
-    items={[
-      {
-        key: '1',
-        label: "Full Access"
-      },
-      {
-        key: '2',
-        label: "Can Edit",
-      },
-      {
-        key: '3',
-        label: "Can Comment",
-      },
-      {
-        key: '4',
-        label: "Can View",
-      },
-      {
-        key: '5',
-        danger: true,
-        label: 'Delete',
-      },
-    ]}
-  />
+  name: string;
+  imageURL: string;
+  type: string;
 }
